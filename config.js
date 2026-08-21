@@ -22,17 +22,17 @@ window.streams = {
 
     stations: [
         {
-            name: "Jailson Webradio",
-            hash: "jailson",
-            description: "Música sem parar",
+            name: "Rac+1",
+            hash: "Rac+1",
+            description: "RAC1, tots som 1",
             // Optional: real FM frequency shown on the "retro" layout dial
             // (e.g. "87.9"). Leave it out to auto-assign one across the band.
             frequency: "",
-            logo: "assets/jailson_logo.png",
-            album: "assets/jailson_cover.png",
-            cover: "assets/jailson_cover.png",
+            logo: "https://i.ibb.co/k6SLjqgp/racmespodadct.png",
+            album: "https://i.ibb.co/k6SLjqgp/racmespodadct.png",
+            cover: "https://i.ibb.co/k6SLjqgp/racmespodadct.png",
             api: "", // leave empty to use the free api.twj.es metadata API
-            stream_url: "https://stream.zeno.fm/yn65fsaurfhvv",
+            stream_url: "https://i.ibb.co/k6SLjqgp/racmespodadct.png",
             tv_url: "https://eu1.servers10.com:2020/VideoPlayer/8106?autoplay=1",
             server: "", // "spotify" or "itunes" for extra cover-art lookup
             program: {
@@ -60,19 +60,19 @@ window.streams = {
         },
 
         {
-            name: "BENDICIÓN STEREO",
-            hash: "bendicion",
-            description: "Bendecidos para bendecir!",
-            logo: "assets/default_logo.png",
-            album: "assets/cover.png",
-            cover: "assets/cover.png",
+            name: "Catalunya Ràdio Digital",
+            hash: "Catalunya Ràdio Digital",
+            description: "Escolta't",
+            logo: "https://i.ibb.co/MkB2RNcK/catdigi.png",
+            album: "https://i.ibb.co/MkB2RNcK/catdigi.png",
+            cover: "https://i.ibb.co/MkB2RNcK/catdigi.png",
             api: "",
-            stream_url: "https://sv2.globalhostlive.com/proxy/bendistereo/stream2",
+            stream_url: "https://directes-radio-int.3catdirectes.cat/live-content/radio-oca-hls/master.m3u8",
             server: "spotify",
             program: {
                 time: "11:00",
-                name: "Bendición Stereo",
-                description: "EN VIVO // ON AIR",
+                name: "Catalunya Ràdio Digital",
+                description: "Catalunya Ràdio Digital",
             },
             social: {
                 facebook: "https://facebook.com/BendicionStereo",
