@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover" />
+    <title>Radio Player HTML5 Multi-Estação — 3 Layouts | Icecast, Shoutcast, Zeno.FM, Azuracast</title>
+    <meta name="description" content="Player de rádio HTML5 com 3 layouts prontos (Retrô Glass, Clássico e Aurora): multi-estação, música tocando agora com capa, letra, clipe do YouTube, programação semanal e PWA. Grátis, sem chave de API." />
+    <meta name="keywords" content="radio player, player de rádio, rádio online, html5 radio player, multi station radio, icecast, shoutcast, zeno fm, azuracast, layouts de rádio, pwa" />
+    <link rel="canonical" href="https://jailsonsb2.github.io/Radioplayer_api/" />
+    <meta name="theme-color" content="dark light" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jailsonsb2.github.io/Radioplayer_api/" />
+    <meta property="og:image" content="https://jailsonsb2.github.io/Radioplayer_api/assets/jailson_cover.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="600" />
+    <meta property="og:title" content="Radio Player HTML5 Multi-Estação — 3 Layouts Prontos" />
+    <meta property="og:description" content="Player de rádio com 3 visuais: now playing, letra, clipe do YouTube, programação e PWA. Icecast, Shoutcast, Zeno.FM e Azuracast." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon" />
+    <link href="manifest.json" rel="manifest" />
+
+    <!-- All station + layout settings live in config.js -->
+    <script src="config.js"></script>
+
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0a0a; }
+      #layout-frame { display: block; border: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+
+  <body>
+    <iframe id="layout-frame" title="Player" allow="autoplay"></iframe>
+
+    <script>
+      // ================================================================
+      // The layout ("version") is chosen in config.js:
+      //   window.streams.layout -> which design to load
+      // ================================================================
+      var LAYOUTS = [
+        { id: "retro",    file: "index-redesign.html" },
+        { id: "classic",  file: "index-classic.html" },
+        { id: "aurora",   file: "index-alt.html" },
+      ];
+      // aliases aceitos em config.js (português ou nome do arquivo)
+      var ALIASES = { classico: "classic", redesign: "retro", alt: "aurora" };
+
+      (function () {
+        var cfg = window.streams || {};
+        var id = String(cfg.layout || "retro").toLowerCase();
+        id = ALIASES[id] || id;
+
+        var layout = LAYOUTS[0];
+        for (var i = 0; i < LAYOUTS.length; i++) {
+          if (LAYOUTS[i].id === id) { layout = LAYOUTS[i]; break; }
+        }
+
+        var frame = document.getElementById("layout-frame");
+        frame.src = layout.file;
+
+        // espelha o título do layout (o redesign o atualiza por estação)
+        frame.addEventListener("load", function () {
+          try {
+            var doc = frame.contentDocument;
+            document.title = doc.title || document.title;
+            var t = doc.querySelector("title");
+            if (t) new MutationObserver(function () {
+              document.title = doc.title;
+            }).observe(t, { childList: true });
+          } catch (e) {}
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+   <head>
+      <meta charset="UTF-8" />
+      <meta
+         name="viewport"
+         content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"
+      />
+      <title>Jailson Webradio</title>
+      <meta name="theme-color" content="dark light" />
+      <link rel="preconnect" href="https://fonts.googleapis.com/" />
+      <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+      <link
+         href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Space+Mono:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap"
+         rel="stylesheet"
+      />
+      <meta
+         property="og:image"
+         content="https://radio.jailson.es/assets/jailson_cover.png"
+      />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="600" />
+      <meta property="og:image:height" content="600" />
+      <meta property="og:title" content="Jailson Webradio" />
+      <meta property="og:description" content="Música sem parar" />
+      <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon" />
+
+      <!-- 1) original engine styles  2) redesign skin (must load last) -->
+      <link rel="stylesheet" href="css/main.min.css" />
+      <link rel="stylesheet" href="rp-redesign.css" />
+
+      <script
+         src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"
+         defer
+      ></script>
+      <script src="js/main.js" defer></script>
+      <link href="manifest.json" rel="manifest" />
+
+      <!-- === station + layout config (shared by all layouts) === -->
+      <script src="config.js"></script>
+   </head>
+
+   <body class="preload">
+      <div class="app">
+         <!-- blurred ambient cover (js-driven) -->
+         <img
+            src="assets/default_logo.png"
+            alt="cover"
+            class="player-cover-image song-cover"
+            height="100%"
+            width="100%"
+         />
+         <div class="rp-tint"></div>
+         <div class="rp-blob rp-blob-1"></div>
+         <div class="rp-blob rp-blob-2"></div>
+
+         <!-- header -->
+         <header class="header">
+            <div class="header-wrapper flex justify-between">
+               <a class="header-logo" href="#site"
+                  ><img
+                     class="header-logo-img"
+                     src="assets/radioplayer.svg"
+                     alt="logo"
+               /></a>
+               <div class="toggle-options flex items-start">
+                  <button class="btn" data-outside="offcanvas-history">
+                     <svg class="i i-compact-disc" viewBox="0 0 24 24">
+                        <path d="M6 12a6 6 0 0 1 6-6"></path>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                     </svg>
+                     Historico
+                  </button>
+                  <button class="btn" data-outside="offcanvas-programacao" hidden>
+                     <svg class="i i-calendar" viewBox="0 0 24 24">
+                        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                        <path d="M3 10h18M8 2v4M16 2v4"></path>
+                     </svg>
+                     Programação
+                  </button>
+                  <button class="btn l:none" data-outside="mobile-menu">
+                     <svg class="i i-bars" viewBox="0 0 24 24">
+                        <path d="M3 6h18M3 12h18M3 18h18"></path>
+                     </svg>
+                  </button>
+               </div>
+            </div>
+         </header>
+
+         <!-- ==================== PLAYER ==================== -->
+         <div class="player song-now scrollbar">
+            <div class="rp-unit">
+               <!-- topbar -->
+               <div class="rp-topbar">
+                  <div class="rp-brand"><b>JAILSON</b><span>· FM ·</span></div>
+                  <div class="rp-status">
+                     <div class="rp-onair">
+                        <span class="rp-dot"></span><span>ON AIR · STEREO</span>
+                     </div>
+                     <span class="rp-clock" id="rp-clock">--:--</span>
+                  </div>
+               </div>
+
+               <div class="rp-main">
+                  <!-- LEFT: art + now playing -->
+                  <div class="rp-left">
+                     <div class="rp-artwrap">
+                        <div class="rp-vinyl">
+                           <div class="rp-vinyl-disc">
+                              <div class="rp-vinyl-label">
+                                 <div class="rp-vinyl-hole"></div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- their .player-artwork hook (must contain an img) -->
+                        <div class="player-artwork relative">
+                           <img
+                              alt="artwork"
+                              height="600"
+                              src="assets/cover.png"
+                              width="600"
+                           />
+                        </div>
+                     </div>
+                     <div class="rp-nowplaying">
+                        <div class="rp-np-label">Now Playing</div>
+                        <span class="song-name station-name">—</span>
+                        <span class="song-artist station-description">—</span>
+                        <div class="player-program"></div>
+                     </div>
+                  </div>
+
+                  <!-- RIGHT: dial + presets + VU + controls -->
+                  <div class="rp-right">
+                     <div class="rp-dial">
+                        <div class="rp-dial-head">
+                           <span class="u">FM · MHz</span
+                           ><span class="f" id="rp-freq">--.-</span>
+                        </div>
+                        <div class="rp-ruler" id="rp-ruler">
+                           <div class="rp-needle" id="rp-needle"></div>
+                        </div>
+                        <div class="rp-scale">
+                           <span>88</span><span>92</span><span>96</span
+                           ><span>100</span><span>104</span><span>108</span>
+                        </div>
+                     </div>
+
+                     <div class="rp-presets" id="rp-presets"></div>
+
+                     <div class="rp-vu">
+                        <div class="rp-vu-head">
+                           <span>VU · LEVEL</span><span>-3dB</span>
+                        </div>
+                        <div class="rp-vu-body">
+                           <div
+                              class="rp-vu-fallback"
+                              id="rp-vu-fallback"
+                           ></div>
+                           <div
+                              class="visualizer"
+                              data-bars="40"
+                              data-gap="0.25"
+                              data-fit
+                           ></div>
+                        </div>
+                     </div>
+
+                     <div class="player-controller">
+                        <div class="rp-transport">
+                           <div class="player-button player-button-volume">
+                              <button
+                                 class="player-button player-button-volume-toggle"
+                                 data-outside="player-volume"
+                                 aria-label="Volume"
+                              >
+                                 <svg
+                                    class="i i-volume-high"
+                                    viewBox="0 0 24 24"
+                                 >
+                                    <path
+                                       d="M6 9H2v6h4l5 4V5Zm9 7a5 5 0 0 0 0-8m3 12a10 10 0 0 0 0-16"
+                                    ></path>
+                                 </svg>
+                              </button>
+                              <div class="dropdown" id="player-volume">
+                                 <div class="player-range-wrapper">
+                                    <input
+                                       aria-label="Volume"
+                                       class="player-volume"
+                                       max="100"
+                                       min="0"
+                                       name="player"
+                                       type="range"
+                                       value="100"
+                                    />
+                                    <div class="player-range-fill"></div>
+                                    <div class="player-range-thumb"></div>
+                                 </div>
+                              </div>
+                           </div>
+
+                           <button
+                              class="player-button player-button-backward-step"
+                              aria-label="Anterior"
+                              hidden
+                           >
+                              <svg
+                                 class="i i-backward-step"
+                                 viewBox="0 0 24 24"
+                              >
+                                 <path d="M6 5v14M18 4v16L8 12Z"></path>
+                              </svg>
+                           </button>
+                           <button
+                              aria-label="Play/Pause"
+                              class="player-button player-button-play flex-none"
+                           >
+                              <svg class="i i-play" viewBox="0 0 24 24">
+                                 <path d="m7 3 14 9-14 9z"></path>
+                              </svg>
+                           </button>
+                           <button
+                              class="player-button player-button-forward-step"
+                              aria-label="Próxima"
+                              hidden
+                           >
+                              <svg class="i i-forward-step" viewBox="0 0 24 24">
+                                 <path d="M18 5v14M6 4v16l10-8Z"></path>
+                              </svg>
+                           </button>
+                        </div>
+
+                        <div class="rp-ctrl-right">
+                           <!-- knob de volume (desktop): casca visual sobre o .player-volume escondido -->
+                           <div class="rp-knob-group">
+                              <svg class="rp-knob-ico" viewBox="0 0 24 24">
+                                 <path
+                                    d="M6 9H2v6h4l5 4V5Zm9 7a5 5 0 0 0 0-8m3 12a10 10 0 0 0 0-16"
+                                 ></path>
+                              </svg>
+                              <div
+                                 class="rp-knob"
+                                 id="rp-knob"
+                                 role="slider"
+                                 tabindex="0"
+                                 aria-label="Volume"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-valuenow="100"
+                              >
+                                 <svg viewBox="0 0 76 76" aria-hidden="true">
+                                    <circle
+                                       class="tr"
+                                       cx="38"
+                                       cy="38"
+                                       r="33"
+                                       stroke-dasharray="155 300"
+                                       transform="rotate(135 38 38)"
+                                    ></circle>
+                                    <circle
+                                       class="fi"
+                                       id="rp-knob-arc"
+                                       cx="38"
+                                       cy="38"
+                                       r="33"
+                                       stroke-dasharray="155 300"
+                                       transform="rotate(135 38 38)"
+                                    ></circle>
+                                 </svg>
+                                 <div class="rp-knob-body" id="rp-knob-body">
+                                    <i></i>
+                                 </div>
+                              </div>
+                              <span class="rp-knob-val" id="rp-knob-val"
+                                 >100%</span
+                              >
+                           </div>
+                           <button
+                              class="player-button player-button-lyrics"
+                              data-outside="modal-lyrics"
+                              aria-label="Letra"
+                           >
+                              <svg class="i i-list-music" viewBox="0 0 24 24">
+                                 <path
+                                    d="M16 8h6V3h-6v15M2 3h9M2 8h9m-9 5h3"
+                                 ></path>
+                                 <circle cx="12" cy="18" r="4"></circle>
+                              </svg>
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- visualizer gooey filter (used by their canvas if styled) -->
+         <svg class="visualizer-filter">
+            <defs>
+               <filter id="gooey" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur
+                     in="SourceGraphic"
+                     stdDeviation="10"
+                     result="blur"
+                  />
+                  <feColorMatrix
+                     in="blur"
+                     values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -20"
+                     result="gooey"
+                  />
+                  <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
+               </filter>
+            </defs>
+         </svg>
+
+         <!-- ============ offcanvas / modals (unchanged, for main.js) ============ -->
+         <aside class="offcanvas scrollbar" id="offcanvas-stations">
+            <button data-close aria-label="close" class="btn">
+               <svg class="i i-xmark" viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12"></path>
+               </svg>
+            </button>
+            <div class="offcanvas-content">
+               <div class="stations column flex g-1" id="stations"></div>
+            </div>
+         </aside>
+         <aside class="offcanvas scrollbar" id="offcanvas-history">
+            <button data-close aria-label="close" class="btn">
+               <svg class="i i-xmark" viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12"></path>
+               </svg>
+            </button>
+            <div class="offcanvas-content">
+               <div class="stations column flex g-0.5" id="history"></div>
+            </div>
+         </aside>
+         <aside class="offcanvas scrollbar" id="offcanvas-programacao">
+            <button data-close aria-label="close" class="btn">
+               <svg class="i i-xmark" viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12"></path>
+               </svg>
+            </button>
+            <div class="offcanvas-content">
+               <div class="programacao-list column flex g-0.5" id="programacao-list"></div>
+            </div>
+         </aside>
+         <div class="modal" id="modal-lyrics">
+            <div class="modal-content">
+               <div
+                  class="modal-title color-title flex items-center justify-between"
+               >
+                  <h2 class="modal-title-text m:fs-3 fs-5 fw-500">Letra</h2>
+                  <button data-close aria-label="close">
+                     <svg class="i i-xmark" viewBox="0 0 24 24">
+                        <path d="M18 6 6 18M6 6l12 12"></path>
+                     </svg>
+                  </button>
+               </div>
+               <div class="modal-body scrollbar" id="lyrics"></div>
+            </div>
+         </div>
+         <div class="modal-video" id="modal-tv">
+            <button data-close aria-label="close" class="btn">
+               <svg class="i i-xmark" viewBox="0 0 24 24">
+                  <path d="M18 6 6 18M6 6l12 12"></path>
+               </svg>
+            </button>
+            <div class="modal-body-video"></div>
+         </div>
+         <div class="modal-overlay"></div>
+         <div class="mobile-menu" id="mobile-menu">
+            <footer class="footer">
+               <div class="footer-wrapper column flex">
+                  <div class="footer-tv"></div>
+                  <div class="footer-app flex wrap g-0.75"></div>
+                  <div class="footer-copyright">
+                     <small
+                        ><strong>© Jailson Webradio</strong> —
+                        contato@jailson.es</small
+                     >
+                  </div>
+               </div>
+            </footer>
+            <div class="player-social flex wrap"></div>
+         </div>
+      </div>
+
+      <!-- ============ redesign chrome: dial ticks, presets, needle sync ============ -->
+      <script>
+         (function () {
+            var FMIN = 88,
+               FMAX = 108;
+            function pct(f) {
+               var p = ((f - FMIN) / (FMAX - FMIN)) * 100;
+               return Math.max(0, Math.min(100, p));
+            }
+
+            // build ruler ticks
+            var ruler = document.getElementById("rp-ruler");
+            if (ruler) {
+               for (var i = 0; i <= 40; i++) {
+                  var t = document.createElement("div");
+                  t.className = "rp-tick" + (i % 4 === 0 ? " major" : "");
+                  t.style.left = (i / 40) * 100 + "%";
+                  ruler.insertBefore(t, ruler.firstChild);
+               }
+            }
+
+            // decorative VU bars
+            var vf = document.getElementById("rp-vu-fallback");
+            if (vf)
+               for (var b = 0; b < 40; b++) {
+                  var bar = document.createElement("i");
+                  bar.style.animationDuration = 0.7 + (b % 5) * 0.16 + "s";
+                  bar.style.animationDelay = ((b * 0.07) % 1.1) + "s";
+                  bar.style.height = 18 + ((b * 37) % 60) + "%";
+                  vf.appendChild(bar);
+               }
+
+            // live clock
+            function tick() {
+               var d = new Date(),
+                  h = ("0" + d.getHours()).slice(-2),
+                  m = ("0" + d.getMinutes()).slice(-2);
+               var c = document.getElementById("rp-clock");
+               if (c) c.textContent = h + ":" + m;
+            }
+            tick();
+            setInterval(tick, 15000);
+
+            // use the station's real frequency when set in config.js;
+            // otherwise assign one automatically, evenly across the band
+            var stations = (window.streams && window.streams.stations) || [];
+            var n = stations.length;
+            var freqs = stations.map(function (s, i) {
+               var f = parseFloat(
+                  String(s.frequency == null ? "" : s.frequency).replace(",", "."),
+               );
+               if (isFinite(f) && f > 0) return +f.toFixed(1);
+               return n > 1 ? +(90 + i * (16 / (n - 1))).toFixed(1) : 98.0;
+            });
+
+            function setActive(i) {
+               document
+                  .querySelectorAll(".rp-preset")
+                  .forEach(function (el, j) {
+                     el.classList.toggle("is-active", j === i);
+                  });
+               var needle = document.getElementById("rp-needle");
+               var freq = document.getElementById("rp-freq");
+               if (needle) needle.style.left = pct(freqs[i]) + "%";
+               if (freq) freq.textContent = freqs[i].toFixed(1);
+               // marca da topbar e título da página acompanham a estação ativa
+               var st = stations[i];
+               if (st) {
+                  var brand = document.querySelector(".rp-brand b");
+                  if (brand) brand.textContent = st.name.toUpperCase();
+                  document.title =
+                     st.name + (st.description ? " — " + st.description : "");
+               }
+            }
+
+            function build() {
+               var wrap = document.getElementById("rp-presets");
+               if (!wrap) return;
+               wrap.innerHTML = "";
+               stations.forEach(function (s, i) {
+                  var btn = document.createElement("button");
+                  btn.className = "rp-preset";
+                  btn.innerHTML =
+                     '<div class="p">P' +
+                     (i + 1) +
+                     " · " +
+                     freqs[i].toFixed(1) +
+                     "</div>" +
+                     '<div class="n">' +
+                     s.name +
+                     "</div>";
+                  btn.addEventListener("click", function () {
+                     // drive the real engine: click the matching hidden station button
+                     var real = document.querySelector(
+                        '#stations .station[data-index="' + i + '"]',
+                     );
+                     if (real) real.click();
+                     setActive(i);
+                  });
+                  wrap.appendChild(btn);
+               });
+               setActive(0);
+
+               // keep presets/needle in sync when station changes via next/prev or Multiradio panel
+               var list = document.getElementById("stations");
+               if (list && "MutationObserver" in window) {
+                  new MutationObserver(function () {
+                     var active = list.querySelector(".station.is-active");
+                     if (active) {
+                        var idx = +active.dataset.index;
+                        if (!isNaN(idx)) setActive(idx);
+                     }
+                  }).observe(list, {
+                     attributes: true,
+                     subtree: true,
+                     attributeFilter: ["class"],
+                  });
+               }
+            }
+
+            // main.js (deferred) populates #stations on load — build after it
+            window.addEventListener("load", build);
+
+            // ---- volume knob (desktop) ------------------------------------
+            // O range .player-volume segue sendo a fonte da verdade: o knob só
+            // escreve nele e dispara "input", que o main.js já escuta (áudio,
+            // fade, localStorage). Arrasto vertical / roda do mouse / setas.
+            (function () {
+               var knob = document.getElementById("rp-knob");
+               var range = document.querySelector(".player-volume");
+               if (!knob || !range) return;
+               var arc = document.getElementById("rp-knob-arc");
+               var body = document.getElementById("rp-knob-body");
+               var out = document.getElementById("rp-knob-val");
+               var ARC = 155; // comprimento do traço do arco cheio (mesmo do trilho)
+
+               function render(v) {
+                  arc.setAttribute(
+                     "stroke-dasharray",
+                     ((ARC * v) / 100).toFixed(1) + " 300",
+                  );
+                  // arco vai de -135° (7h30) a +135° (4h30); o risquinho acompanha
+                  body.style.transform =
+                     "rotate(" + (-135 + (270 * v) / 100) + "deg)";
+                  out.textContent = v + "%";
+                  knob.setAttribute("aria-valuenow", v);
+               }
+               function current() {
+                  return parseInt(range.value, 10) || 0;
+               }
+               function set(v) {
+                  v = Math.max(0, Math.min(100, Math.round(v)));
+                  range.value = v;
+                  range.dispatchEvent(new Event("input", { bubbles: true }));
+                  render(v);
+               }
+
+               var dragging = false,
+                  startY = 0,
+                  startV = 0;
+               knob.addEventListener("pointerdown", function (e) {
+                  dragging = true;
+                  startY = e.clientY;
+                  startV = current();
+                  knob.setPointerCapture(e.pointerId);
+                  e.preventDefault();
+               });
+               knob.addEventListener("pointermove", function (e) {
+                  if (dragging) set(startV + (startY - e.clientY) / 2); // 2px = 1%
+               });
+               knob.addEventListener("pointerup", function () {
+                  dragging = false;
+               });
+               knob.addEventListener("pointercancel", function () {
+                  dragging = false;
+               });
+               knob.addEventListener(
+                  "wheel",
+                  function (e) {
+                     e.preventDefault();
+                     set(current() + (e.deltaY < 0 ? 5 : -5));
+                  },
+                  { passive: false },
+               );
+               knob.addEventListener("keydown", function (e) {
+                  var step = {
+                     ArrowUp: 5,
+                     ArrowRight: 5,
+                     ArrowDown: -5,
+                     ArrowLeft: -5,
+                  }[e.key];
+                  if (step) {
+                     e.preventDefault();
+                     set(current() + step);
+                  } else if (e.key === "Home") {
+                     e.preventDefault();
+                     set(0);
+                  } else if (e.key === "End") {
+                     e.preventDefault();
+                     set(100);
+                  }
+               });
+
+               // se o volume mudar por fora (slider do mobile), o knob acompanha
+               range.addEventListener("input", function () {
+                  render(current());
+               });
+
+               render(
+                  parseInt(localStorage.getItem("volume") || "100", 10) || 100,
+               );
+            })();
+         })();
+      </script>
+   </body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gerador de configuração — Radio Player</title>
+<style>
+    :root {
+        --bg: #0b0b0d;
+        --panel: #16161a;
+        --panel-2: #1e1e24;
+        --border: #2b2b33;
+        --text: #eaeaf0;
+        --muted: #9a9aa8;
+        --accent: #6c5ce7;
+        --accent-2: #00d9a3;
+        --danger: #ff5c5c;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.4;
+    }
+    header {
+        padding: 24px 20px 12px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    header h1 { margin: 0 0 4px; font-size: 22px; }
+    header p { margin: 0; color: var(--muted); font-size: 14px; }
+    main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 12px 20px 60px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    @media (min-width: 980px) {
+        main { grid-template-columns: 1.3fr 1fr; align-items: start; }
+    }
+    .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .panel + .panel { margin-top: 16px; }
+    .sticky { position: sticky; top: 12px; }
+    fieldset {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin: 14px 0;
+        padding: 12px;
+    }
+    legend {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        padding: 0 6px;
+    }
+    .station-card {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 16px;
+    }
+    .station-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .station-card-header h3 { margin: 0; font-size: 15px; }
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    @media (min-width: 620px) {
+        .form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    }
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--muted);
+    }
+    label.required span::after { content: " *"; color: var(--danger); }
+    input, select {
+        background: #0f0f12;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--text);
+        padding: 8px 10px;
+        font-size: 13px;
+        width: 100%;
+    }
+    input:focus, select:focus { outline: 1px solid var(--accent); }
+    input.field-error { border-color: var(--danger); }
+    .slot-row {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+        display: grid;
+        gap: 8px;
+    }
+    .slot-days {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .slot-days label {
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        color: var(--text);
+        font-size: 12px;
+    }
+    .slot-times, .slot-text { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .slot-row-footer { display: flex; justify-content: flex-end; }
+    button {
+        font: inherit;
+        cursor: pointer;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    button:hover { border-color: var(--accent); }
+    button.btn-primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+    }
+    button.btn-danger { color: var(--danger); border-color: transparent; background: transparent; padding: 4px 8px; }
+    button.btn-small { padding: 5px 9px; font-size: 12px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+    #output {
+        width: 100%;
+        min-height: 260px;
+        resize: vertical;
+        background: #0f0f12;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--accent-2);
+        font-family: "Consolas", "Menlo", monospace;
+        font-size: 12.5px;
+        padding: 12px;
+        white-space: pre;
+    }
+    #validation-summary {
+        display: none;
+        background: rgba(255,92,92,.12);
+        border: 1px solid var(--danger);
+        color: #ffb3b3;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+        margin-bottom: 14px;
+    }
+    #copy-feedback {
+        font-size: 12px;
+        color: var(--accent-2);
+        margin-left: 4px;
+        opacity: 0;
+        transition: opacity .2s;
+    }
+    #copy-feedback.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+    <h1>Gerador de configuração — Radio Player</h1>
+    <p>Preencha os dados de cada estação e gere o conteúdo pronto do seu <code>config.js</code>.</p>
+</header>
+
+<main>
+    <section class="panel">
+        <div id="validation-summary"></div>
+        <div id="stations-container"></div>
+        <div class="actions">
+            <button type="button" id="add-station">+ Adicionar estação</button>
+        </div>
+
+        <fieldset>
+            <legend>Configuração geral</legend>
+            <label>Intervalo de atualização da música (ms)
+                <input id="time-refresh" type="number" min="1000" step="1000" value="10000">
+            </label>
+            <label>Layout (versão do player)
+                <select id="layout-select">
+                    <option value="retro" selected>Retrô Glass (redesign)</option>
+                    <option value="classic">Clássico</option>
+                    <option value="aurora">Aurora Deck</option>
+                </select>
+            </label>
+        </fieldset>
+
+        <div class="actions">
+            <button type="button" id="generate" class="btn-primary">Gerar configuração</button>
+        </div>
+    </section>
+
+    <section class="panel sticky">
+        <h3 style="margin-top:0;">Resultado</h3>
+        <p class="hint">Copie o bloco abaixo e salve como <code>config.js</code>, substituindo todo o conteúdo do arquivo.</p>
+        <textarea id="output" readonly placeholder="Clique em &quot;Gerar configuração&quot; para ver o resultado aqui."></textarea>
+        <div class="actions">
+            <button type="button" id="copy-output">Copiar</button>
+            <span id="copy-feedback">Copiado!</span>
+        </div>
+    </section>
+</main>
+
+<template id="station-template">
+    <div class="station-card">
+        <div class="station-card-header">
+            <h3>Estação</h3>
+            <button type="button" class="btn-danger" data-action="remove-station">Remover estação</button>
+        </div>
+
+        <div class="form-grid cols-2">
+            <label class="required"><span>Nome</span><input data-field="name" placeholder="Rádio Exemplo FM"></label>
+            <label class="required"><span>Hash (identificador único)</span><input data-field="hash" placeholder="exemplo-fm"></label>
+            <label class="required" style="grid-column: 1 / -1;"><span>Descrição</span><input data-field="description" placeholder="A trilha sonora da sua vida"></label>
+            <label class="required"><span>Logo (caminho/URL)</span><input data-field="logo" placeholder="assets/logo.png"></label>
+            <label class="required"><span>Capa / Album art</span><input data-field="album" placeholder="assets/cover.png"></label>
+            <label><span>Cover (opcional, usa a capa acima se vazio)</span><input data-field="cover" placeholder="assets/cover.png"></label>
+            <label><span>Server (fonte de metadados)</span>
+                <input data-field="server" list="server-options" placeholder="itunes">
+            </label>
+            <label class="required" style="grid-column: 1 / -1;"><span>URL do stream de áudio</span><input data-field="stream_url" placeholder="https://stream.exemplo.com/live"></label>
+            <label style="grid-column: 1 / -1;"><span>API de metadados (opcional)</span><input data-field="api" placeholder="https://painel.exemplo.com/metadata.json"></label>
+            <label style="grid-column: 1 / -1;"><span>URL de TV/vídeo ao vivo (opcional)</span><input data-field="tv_url" placeholder="https://exemplo.com/tv"></label>
+        </div>
+
+        <fieldset>
+            <legend>Redes sociais (opcional)</legend>
+            <div class="form-grid cols-2">
+                <label><span>Facebook</span><input data-field="social.facebook" placeholder="https://facebook.com/..."></label>
+                <label><span>Instagram</span><input data-field="social.instagram" placeholder="https://instagram.com/..."></label>
+                <label><span>Twitter / X</span><input data-field="social.twitter" placeholder="https://twitter.com/..."></label>
+                <label><span>WhatsApp</span><input data-field="social.whatsapp" placeholder="https://api.whatsapp.com/send/?phone=..."></label>
+                <label><span>TikTok</span><input data-field="social.tiktok" placeholder="https://tiktok.com/@..."></label>
+                <label><span>YouTube</span><input data-field="social.youtube" placeholder="https://youtube.com/..."></label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Apps (opcional)</legend>
+            <div class="form-grid cols-2">
+                <label><span>Android</span><input data-field="apps.android" placeholder="https://play.google.com/..."></label>
+                <label><span>iOS</span><input data-field="apps.ios" placeholder="https://apps.apple.com/..."></label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Programação (grade de horários)</legend>
+            <div class="slots-container"></div>
+            <div class="actions">
+                <button type="button" class="btn-small" data-action="add-slot">+ Adicionar faixa de horário</button>
+            </div>
+            <p class="hint">Sem faixas cadastradas, é usado o "no ar" fixo abaixo (deixe tudo vazio se não quiser mostrar nada):</p>
+            <div class="form-grid cols-2">
+                <label><span>Texto do horário</span><input data-field="program.time" placeholder="00:00"></label>
+                <label><span>Nome do programa</span><input data-field="program.name" placeholder="Nome da rádio"></label>
+                <label style="grid-column: 1 / -1;"><span>Descrição</span><input data-field="program.description" placeholder="Programação Especial"></label>
+            </div>
+        </fieldset>
+    </div>
+</template>
+
+<template id="slot-template">
+    <div class="slot-row">
+        <div class="slot-days">
+            <label><input type="checkbox" value="dom"> Dom</label>
+            <label><input type="checkbox" value="seg"> Seg</label>
+            <label><input type="checkbox" value="ter"> Ter</label>
+            <label><input type="checkbox" value="qua"> Qua</label>
+            <label><input type="checkbox" value="qui"> Qui</label>
+            <label><input type="checkbox" value="sex"> Sex</label>
+            <label><input type="checkbox" value="sab"> Sáb</label>
+        </div>
+        <div class="slot-times">
+            <label><span>Início</span><input type="time" data-field="start"></label>
+            <label><span>Fim</span><input type="time" data-field="end"></label>
+        </div>
+        <div class="slot-text">
+            <label><span>Nome do programa</span><input type="text" data-field="name" placeholder="Manhã Exemplo"></label>
+            <label><span>Descrição</span><input type="text" data-field="description" placeholder="Com Fulano de Tal"></label>
+        </div>
+        <div class="slot-row-footer">
+            <button type="button" class="btn-danger" data-action="remove-slot">Remover faixa</button>
+        </div>
+    </div>
+</template>
+
+<datalist id="server-options">
+    <option value="itunes"></option>
+    <option value="spotify"></option>
+    <option value="deezer"></option>
+</datalist>
+
+<script>
+(function () {
+    "use strict";
+
+    const stationsContainer = document.getElementById("stations-container");
+    const stationTemplate = document.getElementById("station-template");
+    const slotTemplate = document.getElementById("slot-template");
+    const validationSummary = document.getElementById("validation-summary");
+    const output = document.getElementById("output");
+
+    const REQUIRED_FIELDS = ["name", "hash", "description", "logo", "album", "stream_url"];
+
+    function addStation() {
+        const node = stationTemplate.content.cloneNode(true);
+        stationsContainer.appendChild(node);
+        renumberStations();
+    }
+
+    function addSlot(card) {
+        const node = slotTemplate.content.cloneNode(true);
+        card.querySelector(".slots-container").appendChild(node);
+    }
+
+    function renumberStations() {
+        stationsContainer.querySelectorAll(".station-card").forEach((card, index) => {
+            card.querySelector(".station-card-header h3").textContent = `Estação ${index + 1}`;
+        });
+    }
+
+    stationsContainer.addEventListener("click", (event) => {
+        const action = event.target.dataset.action;
+        if (!action) return;
+        if (action === "remove-station") {
+            event.target.closest(".station-card").remove();
+            renumberStations();
+        } else if (action === "add-slot") {
+            addSlot(event.target.closest(".station-card"));
+        } else if (action === "remove-slot") {
+            event.target.closest(".slot-row").remove();
+        }
+    });
+
+    document.getElementById("add-station").addEventListener("click", addStation);
+
+    function getField(scope, field) {
+        const el = scope.querySelector(`[data-field="${field}"]`);
+        return el ? el.value.trim() : "";
+    }
+
+    function readStation(card) {
+        const station = {
+            name: getField(card, "name"),
+            hash: getField(card, "hash"),
+            description: getField(card, "description"),
+            logo: getField(card, "logo"),
+            album: getField(card, "album"),
+            cover: getField(card, "cover") || getField(card, "album"),
+            api: getField(card, "api"),
+            stream_url: getField(card, "stream_url"),
+            tv_url: getField(card, "tv_url"),
+            server: getField(card, "server") || "itunes",
+        };
+
+        const social = {};
+        ["facebook", "instagram", "twitter", "whatsapp", "tiktok", "youtube"].forEach((key) => {
+            const value = getField(card, `social.${key}`);
+            if (value) social[key] = value;
+        });
+        if (Object.keys(social).length) station.social = social;
+
+        const apps = {};
+        ["android", "ios"].forEach((key) => {
+            const value = getField(card, `apps.${key}`);
+            if (value) apps[key] = value;
+        });
+        if (Object.keys(apps).length) station.apps = apps;
+
+        const slots = [...card.querySelectorAll(".slot-row")]
+            .map((row) => {
+                const days = [...row.querySelectorAll('input[type="checkbox"]:checked')].map((cb) => cb.value);
+                const start = getField(row, "start");
+                const end = getField(row, "end");
+                const name = getField(row, "name");
+                const description = getField(row, "description");
+                return { days, start, end, name, description };
+            })
+            .filter((slot) => slot.days.length && slot.start && slot.end);
+
+        if (slots.length) {
+            station.programSchedule = slots;
+        } else {
+            const time = getField(card, "program.time");
+            const name = getField(card, "program.name");
+            const description = getField(card, "program.description");
+            if (time || name || description) {
+                station.program = { time, name, description };
+            }
+        }
+
+        return station;
+    }
+
+    function validate(cards) {
+        const errors = [];
+        cards.forEach((card, index) => {
+            REQUIRED_FIELDS.forEach((field) => {
+                const el = card.querySelector(`[data-field="${field}"]`);
+                const empty = !el.value.trim();
+                el.classList.toggle("field-error", empty);
+                if (empty) errors.push(`Estação ${index + 1}: campo "${field}" é obrigatório.`);
+            });
+        });
+        return errors;
+    }
+
+    function indent(level) {
+        return "    ".repeat(level);
+    }
+
+    function serializeValue(value, level) {
+        if (Array.isArray(value)) {
+            if (!value.length) return "[]";
+            if (value[0] !== null && typeof value[0] === "object") {
+                const items = value.map((item) => indent(level + 1) + serializeValue(item, level + 1)).join(",\n");
+                return `[\n${items},\n${indent(level)}]`;
+            }
+            return `[${value.map((item) => JSON.stringify(item)).join(", ")}]`;
+        }
+        if (value !== null && typeof value === "object") {
+            const keys = Object.keys(value).filter((key) => value[key] !== "" && value[key] !== null && value[key] !== undefined);
+            if (!keys.length) return "{}";
+            const body = keys
+                .map((key) => `${indent(level + 1)}${key}: ${serializeValue(value[key], level + 1)}`)
+                .join(",\n");
+            return `{\n${body},\n${indent(level)}}`;
+        }
+        return JSON.stringify(value);
+    }
+
+    function buildOutput(config) {
+        const body = serializeValue(config, 0);
+        return `window.streams = ${body};\n`;
+    }
+
+    document.getElementById("generate").addEventListener("click", () => {
+        const cards = [...stationsContainer.querySelectorAll(".station-card")];
+        if (!cards.length) {
+            validationSummary.style.display = "block";
+            validationSummary.textContent = "Adicione ao menos uma estação antes de gerar.";
+            return;
+        }
+
+        const errors = validate(cards);
+        if (errors.length) {
+            validationSummary.style.display = "block";
+            validationSummary.innerHTML = errors.map((error) => `• ${error}`).join("<br>");
+            output.value = "";
+            return;
+        }
+        validationSummary.style.display = "none";
+
+        const config = {
+            layout: document.getElementById("layout-select").value,
+            timeRefresh: Number(document.getElementById("time-refresh").value) || 10000,
+            stations: cards.map(readStation),
+        };
+
+        output.value = buildOutput(config);
+    });
+
+    document.getElementById("copy-output").addEventListener("click", async () => {
+        if (!output.value) return;
+        const feedback = document.getElementById("copy-feedback");
+        try {
+            await navigator.clipboard.writeText(output.value);
+        } catch (error) {
+            output.removeAttribute("readonly");
+            output.select();
+            document.execCommand("copy");
+            output.setAttribute("readonly", "readonly");
+        }
+        feedback.classList.add("show");
+        setTimeout(() => feedback.classList.remove("show"), 1500);
+    });
+
+    addStation();
+})();
+</script>
+</body>
+</html>

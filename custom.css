@@ -1,0 +1,195 @@
+/* ==========================================================================
+   MELHORIA DE CONTRASTE E LEGIBILIDADE
+   ========================================================================== */
+
+/* 1. Cria uma sombra escura e difusa atrás de todos os textos principais */
+.song-name,
+.song-artist,
+.station-name,
+.station-description,
+.color-title {
+    text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9), 0px 0px 20px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Aumenta um pouco a opacidade do artista para ele não sumir tanto */
+.station-description {
+    opacity: 0.9 !important; 
+}
+
+/* 2. Escurece o fundo borrado em 50% para dar destaque ao texto e à capa frontal */
+.player-cover-image {
+    filter: brightness(0.5); 
+}
+.station-img {
+    border: 3px solid #ffffff00;
+    padding: 0.15rem;
+}
+.player-artwork {
+    padding: 0.75rem;
+    border-radius: 1rem;
+    background-color: #ffffff00;
+}
+.player-artwork img {
+    border-radius: 0.65rem;
+    box-shadow: var(--shadow-xl);
+}
+.player-cover-image {
+    animation: bga 60s linear infinite;
+}
+@keyframes bga {
+    50% {
+        transform: scale(2);
+    }
+}
+.items-start {
+    align-items: flex-start;
+    margin-top: 15px;
+}
+
+/* Nome da música sem limite de tamanho: títulos longos (feats, "ao vivo",
+   "acústico" etc.) quebravam em 3+ linhas e ficavam por cima do
+   header/logo. .truncate-line (já usada no histórico) corta em 2 linhas
+   com "…", mas só funciona com uma largura pra quebrar contra. */
+.player-cover-title {
+    max-width: min(90vw, 560px);
+}
+
+/* ==========================================================================
+   OTIMIZAÇÕES PARA DISPOSITIVOS MÓVEIS (Ecrãs < 768px)
+   Limpa a interface, poupa bateria e foca na capa do álbum
+   ========================================================================== */
+
+@media (max-width: 767px) {
+    /* 1. Remove o Analisador de Espectro (Fundo em movimento) para poupar bateria */
+    .visualizer, 
+    .visualizer-filter {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* 2. Oculta os botões extras do player (Volume, Letras, Avançar, Retroceder) */
+    .player-button-volume,
+    .player-button-lyrics,
+    .player-button-forward-step,
+    .player-button-backward-step {
+        display: none !important;
+    }
+
+    /* 3. Centraliza e destaca apenas o botão de Play/Pause */
+    .player-controller {
+        justify-content: center !important;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    /* Aumenta o tamanho do botão Play/Pause para facilitar o toque */
+    .player-button-play {
+        transform: scale(1.3);
+        margin: 0 auto;
+    }
+
+    /* 4. Esconde APENAS a descrição "Artist" acima do nome. 
+       O .header-logo foi removido daqui para o logótipo voltar a aparecer! */
+    .station-description { 
+        display: none !important;
+    }
+
+    /* Ajuste fino na capa para ela ocupar melhor o espaço */
+    .player-artwork img {
+        border-radius: 12px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    }
+
+    /* 5. Exibe as redes sociais ancoradas no fundo do ecrã (Longe do botão Play) */
+    .mobile-menu {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding-bottom: 2rem; /* Distância do fundo da tela */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .player-social {
+        display: flex !important;
+        justify-content: center;
+        gap: 1.5rem; /* Espaçamento confortável entre os ícones */
+        width: 100%;
+    }
+
+    /* Tamanho e cor agradável para os ícones sociais (branco com leve transparência) */
+    .player-social-item svg {
+        width: 28px;
+        height: 28px;
+        fill: rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* ==========================================================================
+   PROGRAMA ATUAL (badge sobre a capa) — mais hierarquia entre badge/horário/
+   nome/descrição; o main.min.css deixa tudo igual (mesmo tamanho, tudo
+   maiúsculo, cor sólida fixa no badge)
+   ========================================================================== */
+.player-program {
+    gap: 0.35rem;
+    padding: 1.5rem 1rem 1.25rem;
+    background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.75) 65%);
+}
+.player-program-time-container {
+    gap: 0.6rem;
+}
+.player-program-badge {
+    background-color: var(--accent);
+    letter-spacing: 0.08em;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+.player-program-time {
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+}
+.player-program-name {
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+.player-program-description {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    opacity: 0.75;
+}
+
+/* ==========================================================================
+   LISTA DE PROGRAMAÇÃO (grade de horários do dia)
+   ========================================================================== */
+
+.programacao-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-l);
+}
+.programacao-item.is-active {
+    background-color: rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 0 0 1px var(--accent), var(--shadow-l);
+}
+.programacao-item-time {
+    flex: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--accent);
+    white-space: nowrap;
+}
+.programacao-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+.programacao-item-name { font-weight: 600; }
+.programacao-item-description { font-size: 0.8rem; opacity: 0.75; }

@@ -1,0 +1,15 @@
+# Radio Player HTML5 — Multi-Station, 3 Layouts
+
+> Free HTML5 radio player with three switchable layouts (Retrô Glass, Clássico, Aurora Deck) sharing one engine and one config file. Single or multi-station; works with Icecast, Shoutcast, Zeno.FM and Azuracast. Now playing with album art, song lyrics, YouTube clip mode synchronized with the radio, weekly program schedule, live TV modal and installable PWA. No API key required — configure everything in config.js (or with the visual generator gerador.html). Pt-BR: player de rádio com 3 visuais prontos, grátis.
+
+## Docs
+- [README](https://github.com/jailsonsb2/Radioplayer_api#readme): layout choice, config.js reference, station options (social, apps, tv_url, programSchedule)
+- [Live demo](https://jailsonsb2.github.io/Radioplayer_api/): working player you can try
+
+## Source
+- [GitHub repository](https://github.com/jailsonsb2/Radioplayer_api): AGPL-3.0 (commercial license available)
+
+## Related
+- [metadados](https://github.com/jailsonsb2/metadados): the free now-playing metadata API this player uses (ICY + iTunes + YouTube clip IDs)
+- [RadioPlayer](https://github.com/jailsonsb2/RadioPlayer): single-station full-page player
+- [bottom_radioplayer](https://github.com/jailsonsb2/bottom_radioplayer): bottom-bar component where the audio never stops while visitors navigate

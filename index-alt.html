@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover" />
+        <title>Jailson Webradio — Aurora Deck</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com/" />
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+        <meta name="theme-color" content="dark light" />
+        <meta property="og:image" content="https://radio.jailson.es/assets/jailson_cover.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="600" />
+        <meta property="og:image:height" content="600" />
+        <meta property="og:title" content="Jailson Webradio" />
+        <meta property="og:description" content="Música sem parar" />
+        <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon" />
+        <link rel="stylesheet" href="css/alt.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js" defer=""></script>
+        <script src="js/main.js" defer></script>
+        <link href="manifest.json" rel="manifest" />
+        <script src="config.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet" />
+    </head>
+    <body class="preload">
+        <div class="app">
+            <img src="assets/default_logo.png" alt="" class="player-cover-image" height="100%" width="100%" />
+            <div class="visualizer" data-bars="64" data-gap="0.25" data-max-height="255"></div>
+            <div class="bg-veil"></div>
+
+            <header class="header">
+                <div class="header-wrapper flex justify-between items-center">
+                    <a class="brand" href="#site">
+                        <img class="header-logo-img" src="assets/radioplayer.svg" alt="logo" />
+                    </a>
+
+                    <div class="toggle-options flex items-center g-0.75">
+                        <button class="btn" data-outside="offcanvas-history" aria-label="Histórico">
+                            <svg class="i" viewBox="0 0 24 24">
+                                <path d="M6 12a6 6 0 0 1 6-6"></path>
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                            <span class="btn-label">Histórico</span>
+                        </button>
+                        <button class="btn" data-outside="offcanvas-programacao" aria-label="Programação" hidden>
+                            <svg class="i" viewBox="0 0 24 24">
+                                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                                <path d="M3 10h18M8 2v4M16 2v4"></path>
+                            </svg>
+                            <span class="btn-label">Programação</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="song-now deck">
+                <section class="deck-card">
+                    <div class="deck-art">
+                        <div class="art-frame">
+                            <div class="art-glow" aria-hidden="true"></div>
+                            <div class="player-artwork">
+                                <img alt="artwork" height="600" src="assets/cover.png" width="600" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deck-info">
+                        <!-- chips de estação: atalho visível para o painel #stations -->
+                        <div class="deck-stations" id="deck-stations"></div>
+
+                        <div class="track-meta">
+                            <span class="np-label">Now Playing</span>
+                            <h1 class="song-name station-name title">Song</h1>
+                            <span class="song-artist station-description artist">Artist</span>
+                        </div>
+
+                        <div class="player-program"></div>
+
+                        <div class="deck-divider" aria-hidden="true"></div>
+
+                        <div class="controls-dock">
+                            <div class="transport">
+                                <button class="player-button player-button-backward-step icon-btn" aria-label="Anterior" hidden>
+                                    <svg class="i" viewBox="0 0 24 24">
+                                        <path d="M6 5v14M18 4v16L8 12Z"></path>
+                                    </svg>
+                                </button>
+
+                                <button aria-label="Play/Pause" class="player-button player-button-play flex-none">
+                                    <svg class="i" viewBox="0 0 24 24">
+                                        <path d="m7 3 14 9-14 9z"></path>
+                                    </svg>
+                                </button>
+
+                                <button class="player-button player-button-forward-step icon-btn" aria-label="Próxima" hidden>
+                                    <svg class="i" viewBox="0 0 24 24">
+                                        <path d="M18 5v14M6 4v16l10-8Z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="dock-utils">
+                                <div class="player-button player-button-volume">
+                                    <button class="player-button player-button-volume-toggle icon-btn" data-outside="player-volume" aria-label="Volume">
+                                        <svg class="i" viewBox="0 0 24 24">
+                                            <path d="M6 9H2v6h4l5 4V5Zm9 7a5 5 0 0 0 0-8m3 12a10 10 0 0 0 0-16"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="dropdown" id="player-volume">
+                                        <div class="player-range-wrapper">
+                                            <input aria-label="Volume" class="player-volume" max="100" min="0" name="player" type="range" value="100" />
+                                            <div class="player-range-fill"></div>
+                                            <div class="player-range-thumb"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="player-button player-button-lyrics icon-btn" data-outside="modal-lyrics" aria-label="Letra">
+                                    <svg class="i" viewBox="0 0 24 24">
+                                        <path d="M16 8h6V3h-6v15M2 3h9M2 8h9m-9 5h3"></path>
+                                        <circle cx="12" cy="18" r="4"></circle>
+                                    </svg>
+                                </button>
+
+                                <div class="footer-tv"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="glass-footer">
+                <div class="player-social flex g-0.5"></div>
+                <div class="footer-copyright"><small><strong>© Jailson Webradio</strong> — contato@jailson.es</small></div>
+                <div class="footer-app flex wrap g-0.5"></div>
+            </footer>
+
+            <aside class="offcanvas scrollbar" id="offcanvas-stations">
+                <div class="offcanvas-head flex items-center justify-between">
+                    <h2>Estações</h2>
+                    <button data-close aria-label="close" class="icon-btn">
+                        <svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="offcanvas-content">
+                    <div id="stations"></div>
+                </div>
+            </aside>
+
+            <aside class="offcanvas scrollbar" id="offcanvas-history">
+                <div class="offcanvas-head flex items-center justify-between">
+                    <h2>Histórico</h2>
+                    <button data-close aria-label="close" class="icon-btn">
+                        <svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="offcanvas-content">
+                    <div id="history"></div>
+                </div>
+            </aside>
+
+            <aside class="offcanvas scrollbar" id="offcanvas-programacao">
+                <div class="offcanvas-head flex items-center justify-between">
+                    <h2>Programação</h2>
+                    <button data-close aria-label="close" class="icon-btn">
+                        <svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="offcanvas-content">
+                    <div id="programacao-list"></div>
+                </div>
+            </aside>
+
+            <div class="modal" id="modal-lyrics">
+                <div class="modal-content">
+                    <div class="modal-title color-title flex items-center justify-between">
+                        <h2 class="modal-title-text">Letra</h2>
+                        <button data-close aria-label="close" class="icon-btn">
+                            <svg class="i" viewBox="0 0 24 24">
+                                <path d="M18 6 6 18M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body scrollbar" id="lyrics"></div>
+                </div>
+            </div>
+
+            <div class="modal-video" id="modal-tv">
+                <button data-close aria-label="close" class="btn icon-btn">
+                    <svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                </button>
+                <div class="modal-body-video"></div>
+            </div>
+
+            <div class="modal-overlay"></div>
+        </div>
+
+        <script>
+            // ---- mesma lógica do redesign, com a roupa do Aurora Deck ----
+            (function () {
+                var stations = (window.streams && window.streams.stations) || [];
+
+                // chips de estação + título da página acompanham a estação ativa
+                function setActive(i) {
+                    document.querySelectorAll(".deck-station").forEach(function (el, j) {
+                        el.classList.toggle("is-active", j === i);
+                    });
+                    var st = stations[i];
+                    if (st) document.title = st.name + (st.description ? " — " + st.description : "");
+                }
+
+                var wrap = document.getElementById("deck-stations");
+                if (wrap && stations.length > 1) {
+                    stations.forEach(function (s, i) {
+                        var btn = document.createElement("button");
+                        btn.className = "deck-station";
+                        btn.textContent = s.name;
+                        btn.addEventListener("click", function () {
+                            // aciona o motor real: o botão oculto do painel de estações
+                            var real = document.querySelector('#stations .station[data-index="' + i + '"]');
+                            if (real) real.click();
+                            setActive(i);
+                        });
+                        wrap.appendChild(btn);
+                    });
+                }
+                setActive(0);
+
+                // sincroniza quando a troca vem de next/prev ou do painel lateral
+                var list = document.getElementById("stations");
+                if (list && "MutationObserver" in window) {
+                    new MutationObserver(function () {
+                        var active = list.querySelector(".station.is-active");
+                        if (active) {
+                            var idx = +active.dataset.index;
+                            if (!isNaN(idx)) setActive(idx);
+                        }
+                    }).observe(list, { attributes: true, subtree: true, attributeFilter: ["class"] });
+                }
+            })();
+        </script>
+    </body>
+</html>
