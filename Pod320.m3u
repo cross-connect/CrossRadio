@@ -1,8 +1,9 @@
-#EXTM3U
+#EXTM3U x-tvg-url="https://githubusercontent.com"
 
-#EXTINF:-1 tvg-logo="https://i.ibb.co/k6SLjqgp/racmespodadct.png",RAC+1
-https://28563.live.streamtheworld.com/RAC_MES_1.mp3
+#EXTINF:-1 tvg-id="RAC1.es" tvg-logo="https://ibb.co",RAC+1
+#EXTIMG:https://ibb.co
+https://streamtheworld.com
 
-#EXTINF:-1 tvg-logo="https://i.ibb.co/MkB2RNcK/catdigi.png",Catalunya Ràdio Digital
-https://directes-radio-int.3catdirectes.cat/live-content/radio-oca-hls/master.m3u8
-
+#EXTINF:-1 tvg-id="CatalunyaRadio.es" tvg-logo="https://i.ibb.co/MkB2RNcK/catdigi.png",Catalunya Ràdio Digital
+#EXTIMG:https://i.ibb.co/MkB2RNcK/catdigi.png
+https://3catdirectes.cat
