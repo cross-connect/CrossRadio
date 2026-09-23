@@ -1,7 +1,0 @@
-#EXTM3U
-
-#EXTINF:-1 tvg-logo="https://wikimedia.org",RAC+1 (Digital)
-https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_MES_1.mp3
-
-#EXTINF:-1 tvg-logo="https://wikimedia.org",Catalunya Ràdio Exclusiu (Digital)
-https://directes-radio-int.3catdirectes.cat/live-content/radio-oca-hls/master.m3u8
